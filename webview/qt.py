@@ -68,7 +68,7 @@ class BrowserView(QMainWindow):
     current_url_trigger = QtCore.pyqtSignal()
 
     def __init__(self, title, url, width, height, resizable, fullscreen,
-                 min_size, confirm_quit, background_color, webview_ready):
+                 min_size, confirm_quit, background_color, debug, webview_ready):
         super(BrowserView, self).__init__()
         BrowserView.instance = self
         self.is_fullscreen = False
@@ -201,11 +201,11 @@ class BrowserView(QMainWindow):
 
 
 def create_window(title, url, width, height, resizable, fullscreen, min_size,
-                  confirm_quit, background_color, webview_ready):
+                  confirm_quit, background_color, debug, webview_ready):
     app = QApplication([])
 
     browser = BrowserView(title, url, width, height, resizable, fullscreen,
-                          min_size, confirm_quit, background_color, webview_ready)
+                          min_size, confirm_quit, background_color, debug, webview_ready)
     browser.show()
     app.exec_()
 
