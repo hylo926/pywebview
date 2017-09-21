@@ -31,11 +31,12 @@ logger = logging.getLogger(__name__)
 class BrowserView:
     class BrowserForm(WinForms.Form):
         def __init__(self, title, url, width, height, resizable, fullscreen, min_size,
-                     confirm_quit, background_color, webview_ready):
+                     confirm_quit, background_color, webview_ready, flags=64):
             self.Text = title
             self.ClientSize = Size(width, height)
             self.MinimumSize = Size(min_size[0], min_size[1])
             self.BackColor = ColorTranslator.FromHtml(background_color)
+            self.flags = flags
 
             if not resizable:
                 self.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
@@ -125,7 +126,7 @@ class BrowserView:
                 self.WindowState = WinForms.FormWindowState.Maximized
                 self.is_fullscreen = True
 
-                windll.user32.SetWindowPos(self.Handle.ToInt32(), None, screen.Bounds.X, screen.Bounds.Y, screen.Bounds.Width, screen.Bounds.Height, 64)
+                windll.user32.SetWindowPos(self.Handle.ToInt32(), None, screen.Bounds.X, screen.Bounds.Y, screen.Bounds.Width, screen.Bounds.Height, self.flags)
             else:
                 self.TopMost = False
                 self.Size = self.old_size
@@ -136,12 +137,12 @@ class BrowserView:
 
         def set_window_pos(self, x, y):
             #print ("x", x, "y", y)
-            windll.user32.SetWindowPos(self.Handle.ToInt32(), None, x, y, self.Size.Width, self.Size.Height, 64)
+            windll.user32.SetWindowPos(self.Handle.ToInt32(), None, x, y, self.Size.Width, self.Size.Height, self.flags)
 
 
     instance = None
 
-    def __init__(self, title, url, width, height, resizable, fullscreen, min_size, confirm_quit, background_color, webview_ready):
+    def __init__(self, title, url, width, height, resizable, fullscreen, min_size, confirm_quit, background_color, webview_ready, flags=64):
         BrowserView.instance = self
         self.title = title
         self.url = url
@@ -153,14 +154,16 @@ class BrowserView:
         self.confirm_quit = confirm_quit
         self.webview_ready = webview_ready
         self.background_color = background_color
+        self.flags = flags
         self.browser = None
 
     def show(self):
         def start():
             app = WinForms.Application
             self.browser = BrowserView.BrowserForm(self.title, self.url, self.width,self.height, self.resizable,
-                                                   self.fullscreen, self.min_size, self.confirm_quit, self.background_color, self.webview_ready)
-            self.browser.set_window_pos(0,0)
+                                                   self.fullscreen, self.min_size, self.confirm_quit, 
+                                                   self.background_color, self.webview_ready, self.flags)
+            #self.browser.set_window_pos(0,0)
             app.Run(self.browser)
 
         thread = Thread(ThreadStart(start))
@@ -242,10 +245,10 @@ class BrowserView:
         self.browser.set_window_pos(x, y)
 
 def create_window(title, url, width, height, resizable, fullscreen, min_size,
-                  confirm_quit, background_color, webview_ready):
+                  confirm_quit, background_color, webview_ready, flags=64):
     set_ie_mode()
     browser_view = BrowserView(title, url, width, height, resizable, fullscreen,
-                               min_size, confirm_quit, background_color, webview_ready)
+                               min_size, confirm_quit, background_color, webview_ready, flags)
     browser_view.show()
 
 
