@@ -134,6 +134,11 @@ class BrowserView:
                 self.Location = self.old_location
                 self.is_fullscreen = False
 
+        def set_window_pos(self, x, y):
+            #print ("x", x, "y", y)
+            windll.user32.SetWindowPos(self.Handle.ToInt32(), None, x, y, self.Size.Width, self.Size.Height, 64)
+
+
     instance = None
 
     def __init__(self, title, url, width, height, resizable, fullscreen, min_size, confirm_quit, background_color, webview_ready):
@@ -155,6 +160,7 @@ class BrowserView:
             app = WinForms.Application
             self.browser = BrowserView.BrowserForm(self.title, self.url, self.width,self.height, self.resizable,
                                                    self.fullscreen, self.min_size, self.confirm_quit, self.background_color, self.webview_ready)
+            self.browser.set_window_pos(0,0)
             app.Run(self.browser)
 
         thread = Thread(ThreadStart(start))
@@ -232,6 +238,8 @@ class BrowserView:
     def toggle_fullscreen(self):
         self.browser.toggle_fullscreen()
 
+    def set_window_pos(self, x, y):
+        self.browser.set_window_pos(x, y)
 
 def create_window(title, url, width, height, resizable, fullscreen, min_size,
                   confirm_quit, background_color, webview_ready):
@@ -263,3 +271,6 @@ def toggle_fullscreen():
 
 def destroy_window():
     BrowserView.instance.destroy()
+
+def set_window_pos(x, y):
+    BrowserView.instance.set_window_pos(x, y)

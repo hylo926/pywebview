@@ -189,6 +189,12 @@ def create_window(title, url=None, width=800, height=600,
                       width, height, resizable, fullscreen, min_size, confirm_quit,
                       background_color, _webview_ready)
 
+def set_window_pos(x,y):
+    try:
+        _webview_ready.wait(5)
+        gui.set_window_pos(x,y)
+    except NameError:
+        raise Exception("Create a web view window first, before invoking this function")
 
 def get_current_url():
     """
