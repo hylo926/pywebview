@@ -163,7 +163,7 @@ def load_html(content, base_uri=""):
 
 def create_window(title, url=None, width=800, height=600,
                   resizable=True, fullscreen=False, min_size=(200, 100), strings={}, confirm_quit=False,
-                  background_color='#FFFFFF', flags=64):
+                  background_color='#FFFFFF', flags=64, x=0, y=0):
     """
     Create a web view window using a native GUI. The execution blocks after this function is invoked, so other
     program logic must be executed in a separate thread.
@@ -187,12 +187,19 @@ def create_window(title, url=None, width=800, height=600,
     localization.update(strings)
     gui.create_window(_make_unicode(title), _transform_url(url),
                       width, height, resizable, fullscreen, min_size, confirm_quit,
-                      background_color, _webview_ready, flags)
+                      background_color, _webview_ready, flags, x, y)
 
 def set_window_pos(x,y):
     try:
         _webview_ready.wait(5)
         gui.set_window_pos(x,y)
+    except NameError:
+        raise Exception("Create a web view window first, before invoking this function")
+
+def set_topmost(topmost):
+    try:
+        _webview_ready.wait(5)
+        gui.set_topmost(topmost)
     except NameError:
         raise Exception("Create a web view window first, before invoking this function")
 

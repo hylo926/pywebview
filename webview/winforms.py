@@ -31,17 +31,22 @@ logger = logging.getLogger(__name__)
 class BrowserView:
     class BrowserForm(WinForms.Form):
         def __init__(self, title, url, width, height, resizable, fullscreen, min_size,
-                     confirm_quit, background_color, webview_ready, flags=64):
-            self.Text = title
+                     confirm_quit, background_color, webview_ready, flags=64, x=0, y=0):
+            #self.Text = title
+            self.Text = None
             self.ClientSize = Size(width, height)
             self.MinimumSize = Size(min_size[0], min_size[1])
             self.BackColor = ColorTranslator.FromHtml(background_color)
             self.flags = flags
+            self.Location.X = x
+            self.Location.Y = y
+            self.TopMost = True
 
             if not resizable:
                 self.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
                 self.MaximizeBox = False
 
+            self.FormBorderStyle = 0
             # Application icon
             handle = windll.kernel32.GetModuleHandleW(None)
             icon_handle = windll.shell32.ExtractIconW(handle, sys.executable, 0)
@@ -120,7 +125,7 @@ class BrowserView:
 
                 screen = WinForms.Screen.FromControl(self)
 
-                self.TopMost = True
+                #self.TopMost = True
                 self.FormBorderStyle = 0  # FormBorderStyle.None
                 self.Bounds = WinForms.Screen.PrimaryScreen.Bounds
                 self.WindowState = WinForms.FormWindowState.Maximized
@@ -128,7 +133,7 @@ class BrowserView:
 
                 windll.user32.SetWindowPos(self.Handle.ToInt32(), None, screen.Bounds.X, screen.Bounds.Y, screen.Bounds.Width, screen.Bounds.Height, self.flags)
             else:
-                self.TopMost = False
+                #self.TopMost = False
                 self.Size = self.old_size
                 self.WindowState = self.old_state
                 self.FormBorderStyle = self.old_style
@@ -139,10 +144,13 @@ class BrowserView:
             #print ("x", x, "y", y)
             windll.user32.SetWindowPos(self.Handle.ToInt32(), None, x, y, self.Size.Width, self.Size.Height, self.flags)
 
+        def set_topmost(self, topmost):
+            self.TopMost = topmost
+
 
     instance = None
 
-    def __init__(self, title, url, width, height, resizable, fullscreen, min_size, confirm_quit, background_color, webview_ready, flags=64):
+    def __init__(self, title, url, width, height, resizable, fullscreen, min_size, confirm_quit, background_color, webview_ready, flags=64, x=0, y=0):
         BrowserView.instance = self
         self.title = title
         self.url = url
@@ -156,13 +164,15 @@ class BrowserView:
         self.background_color = background_color
         self.flags = flags
         self.browser = None
+        self.x = x
+        self.y = y
 
     def show(self):
         def start():
             app = WinForms.Application
             self.browser = BrowserView.BrowserForm(self.title, self.url, self.width,self.height, self.resizable,
                                                    self.fullscreen, self.min_size, self.confirm_quit, 
-                                                   self.background_color, self.webview_ready, self.flags)
+                                                   self.background_color, self.webview_ready, self.flags, self.x, self.y)
             #self.browser.set_window_pos(0,0)
             app.Run(self.browser)
 
@@ -244,11 +254,14 @@ class BrowserView:
     def set_window_pos(self, x, y):
         self.browser.set_window_pos(x, y)
 
+    def set_topmost(self, topmost):
+        self.browser.set_topmost(topmost)
+
 def create_window(title, url, width, height, resizable, fullscreen, min_size,
-                  confirm_quit, background_color, webview_ready, flags=64):
+                  confirm_quit, background_color, webview_ready, flags=64, x=0, y=0):
     set_ie_mode()
     browser_view = BrowserView(title, url, width, height, resizable, fullscreen,
-                               min_size, confirm_quit, background_color, webview_ready, flags)
+                               min_size, confirm_quit, background_color, webview_ready, flags, x, y)
     browser_view.show()
 
 
@@ -277,3 +290,6 @@ def destroy_window():
 
 def set_window_pos(x, y):
     BrowserView.instance.set_window_pos(x, y)
+
+def set_topmost(topmost):
+    BrowserView.instance.set_topmost(topmost)
