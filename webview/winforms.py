@@ -144,8 +144,12 @@ class BrowserView:
             #print ("x", x, "y", y)
             windll.user32.SetWindowPos(self.Handle.ToInt32(), None, x, y, self.Size.Width, self.Size.Height, self.flags)
 
+        def get_window_pos(self):
+            return [self.Location.X, self.Location.Y] 
+
         def set_topmost(self, topmost):
-            self.TopMost = topmost
+            if self.TopMost != topmost:
+                self.TopMost = topmost
 
 
     instance = None
@@ -254,6 +258,9 @@ class BrowserView:
     def set_window_pos(self, x, y):
         self.browser.set_window_pos(x, y)
 
+    def get_window_pos(self):
+        return self.browser.get_window_pos()
+
     def set_topmost(self, topmost):
         self.browser.set_topmost(topmost)
 
@@ -290,6 +297,9 @@ def destroy_window():
 
 def set_window_pos(x, y):
     BrowserView.instance.set_window_pos(x, y)
+
+def get_window_pos():
+    return BrowserView.instance.get_window_pos()
 
 def set_topmost(topmost):
     BrowserView.instance.set_topmost(topmost)

@@ -189,16 +189,32 @@ def create_window(title, url=None, width=800, height=600,
                       width, height, resizable, fullscreen, min_size, confirm_quit,
                       background_color, _webview_ready, flags, x, y)
 
+def get_webview_ready():
+    pass
+
 def set_window_pos(x,y):
+    if not _initialized:
+        return
     try:
-        _webview_ready.wait(5)
+        _webview_ready.wait(2)
         gui.set_window_pos(x,y)
     except NameError:
         raise Exception("Create a web view window first, before invoking this function")
 
-def set_topmost(topmost):
+def get_window_pos():
+    if not _initialized:
+        return
     try:
-        _webview_ready.wait(5)
+        _webview_ready.wait(2)
+        return gui.get_window_pos()
+    except NameError:
+        raise Exception("Create a web view window first, before invoking this function")
+
+def set_topmost(topmost):
+    if not _initialized:
+        return
+    try:
+        _webview_ready.wait(2)
         gui.set_topmost(topmost)
     except NameError:
         raise Exception("Create a web view window first, before invoking this function")
